@@ -24,25 +24,35 @@ package org.codehaus.mojo.unix.maven.zip;
  * SOFTWARE.
  */
 
-import fj.*;
-import fj.data.*;
-import static fj.data.List.*;
-import static java.util.regex.Pattern.*;
-import junit.framework.*;
-import org.apache.commons.vfs.*;
-import static org.codehaus.mojo.unix.FileAttributes.*;
-import static org.codehaus.mojo.unix.UnixFsObject.*;
-import org.codehaus.mojo.unix.core.*;
-import static org.codehaus.mojo.unix.util.RelativePath.*;
+import fj.P2;
+import fj.data.List;
+import fj.data.Option;
+import junit.framework.TestCase;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemManager;
+import org.apache.commons.vfs.FileType;
+import org.apache.commons.vfs.VFS;
+import org.codehaus.mojo.unix.core.CopyDirectoryOperation;
+import org.codehaus.mojo.unix.core.CopyFileOperation;
+import org.codehaus.mojo.unix.core.CreateDirectoriesOperation;
+import org.codehaus.mojo.unix.core.FilterFilesOperation;
+import org.codehaus.mojo.unix.util.ScriptUtil;
+import org.codehaus.mojo.unix.util.TestUtil;
+import org.joda.time.LocalDateTime;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import static fj.data.List.single;
+import static java.util.regex.Pattern.compile;
+import static org.codehaus.mojo.unix.FileAttributes.EMPTY;
+import static org.codehaus.mojo.unix.UnixFsObject.Replacer;
+import static org.codehaus.mojo.unix.util.RelativePath.relativePath;
 import static org.codehaus.mojo.unix.util.line.LineStreamWriter.EOL;
-
-import org.codehaus.mojo.unix.util.*;
-import org.codehaus.mojo.unix.util.line.LineStreamWriter;
-import org.joda.time.*;
-
-import java.io.*;
-import java.nio.charset.*;
-import java.util.zip.*;
 
 /**
  * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
@@ -112,7 +122,7 @@ public class ZipPackageTest
         // Is it really correct that filtered files should retain the old timestamp?
         assertFile( in, "./dirs/bar.txt", 7 + EOL.length(), dirsBarTxtTimestamp, "awesome" + EOL );
         assertDirectory( in, "./file/", fileTimestamp );
-        assertFile( in, "./file/foo.txt", 6, fileFooTxtTimestamp, "@foo@\n" );
+        assertFile( in, "./file/foo.txt", 5 + EOL.length(), fileFooTxtTimestamp, "@foo@" + EOL );
         assertDirectory( in, "./opt/", timestamp );
         assertDirectory( in, "./opt/hudson/", timestamp );
         assertNull( in.getNextEntry() );
@@ -135,6 +145,7 @@ public class ZipPackageTest
         throws IOException
     {
         ZipEntry entry = in.getNextEntry();
+
         assertNotNull( entry );
         assertFalse( name + " should be file", entry.isDirectory() );
         assertEquals( name + ", name", name, entry.getName() );

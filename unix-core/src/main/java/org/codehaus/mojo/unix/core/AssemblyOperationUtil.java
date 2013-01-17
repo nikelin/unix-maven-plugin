@@ -24,15 +24,20 @@ package org.codehaus.mojo.unix.core;
  * SOFTWARE.
  */
 
-import fj.data.*;
-import static fj.data.List.*;
-import org.apache.commons.vfs.*;
-import org.codehaus.mojo.unix.*;
+import fj.data.List;
+import org.apache.commons.vfs.FileContent;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.FileType;
+import org.codehaus.mojo.unix.FileAttributes;
+import org.codehaus.mojo.unix.UnixFsObject;
+import org.codehaus.mojo.unix.util.RelativePath;
+import org.codehaus.mojo.unix.util.line.LineStreamWriter;
+import org.joda.time.LocalDateTime;
+
+import static fj.data.List.nil;
 import static org.codehaus.mojo.unix.UnixFsObject.*;
-import org.codehaus.mojo.unix.util.*;
-import org.codehaus.mojo.unix.util.line.*;
-import static org.codehaus.mojo.unix.util.line.LineStreamUtil.*;
-import org.joda.time.*;
+import static org.codehaus.mojo.unix.util.line.LineStreamUtil.prefix;
 
 /**
  * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
@@ -45,6 +50,7 @@ public class AssemblyOperationUtil
         throws FileSystemException
     {
         FileContent content = fromFile.getContent();
+        System.out.println("File content: " + fromFile.getURL().toExternalForm() );
 
         return regularFile( toFile, new LocalDateTime( content.getLastModifiedTime() ), content.getSize(), attributes,
                             filters );
