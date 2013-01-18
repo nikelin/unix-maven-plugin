@@ -218,11 +218,6 @@
     <module>unix-sysv-pkg</module>
     <module>unix-rpm</module>
   </modules>
-  <scm>
-    <connection>scm:git:https://github.com/trygvis/unix-maven-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:trygvis/unix-maven-plugin.git</developerConnection>
-    <url>https://github.com/trygvis/unix-maven-plugin</url>
-  </scm>
   <reporting>
     <plugins>
       <plugin>
@@ -314,4 +309,17 @@
       </repositories>
     </profile>
   </profiles>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>redshape.central</id>
+            <name>Repository</name>
+            <url>scp://78.47.14.237/opt/artifactory/</url>
+        </snapshotRepository>
+        <repository>
+            <id>redshape.central</id>
+            <name>Repository</name>
+            <url>scp://78.47.14.237/opt/artifactory/</url>
+        </repository>
+    </distributionManagement>
 </project>
